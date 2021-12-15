@@ -6,7 +6,7 @@ import { Text, Image, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedButtonBase, Devider } from ".";
 
-const Header = (props: BottomTabHeaderProps | NativeStackHeaderProps) => {
+const Header = (props: NativeStackHeaderProps | BottomTabHeaderProps) => {
   const theme = useTheme();
 
   const styles = useMemo(
@@ -20,41 +20,44 @@ const Header = (props: BottomTabHeaderProps | NativeStackHeaderProps) => {
           flexDirection: "row",
           alignItems: "center",
           paddingHorizontal: 10,
-          justifyContent: "space-between",
+          justifyContent: "flex-start",
+          borderBottomWidth: 1,
+          borderColor: theme.colors.border,
         },
-        title: { color: theme.colors.text, fontSize: 24, fontWeight: "700" },
+        title: { color: theme.colors.text, fontSize: 22, fontWeight: "700" },
       }),
     [theme]
   );
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.background}>
-      {props.navigation.canGoBack() && (
-        <AnimatedButtonBase
-          buttonStyle={{
-            height: 38,
-            width: 38,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => {
-            props.navigation.goBack();
-          }}
-        >
-          <Image
-            source={require("../../assets/icons/Arrow_left.png")}
-            style={{
-              width: 28,
-              height: 28,
-              resizeMode: "contain",
-            }}
-          />
-        </AnimatedButtonBase>
-      )}
       <View style={styles.contianer}>
+        {props.back && (
+          <AnimatedButtonBase
+            buttonStyle={{
+              height: 38,
+              width: 38,
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: 10,
+            }}
+            onPress={() => {
+              props.navigation.goBack();
+            }}
+          >
+            <Image
+              source={require("../../assets/icons/Arrow_left.png")}
+              style={{
+                width: 32,
+                height: 32,
+                resizeMode: "contain",
+                tintColor: theme.colors.text,
+              }}
+            />
+          </AnimatedButtonBase>
+        )}
         <Text style={styles.title}>{props.options.title}</Text>
       </View>
-      <Devider />
     </SafeAreaView>
   );
 };
