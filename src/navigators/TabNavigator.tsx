@@ -1,11 +1,7 @@
 import React from "react";
 import { useTheme } from "@react-navigation/native";
-import {
-  BottomTabBarButtonProps,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
-import { View, Image, StyleSheet, ImageStyle, StyleProp } from "react-native";
-
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, Image, ImageStyle, StyleProp, ImageProps } from "react-native";
 import {
   HomeScreen,
   NotificationScreen,
@@ -13,13 +9,27 @@ import {
   SearchScreen,
 } from "../screens";
 import { TabStackParamList } from "../types";
-import AnimatedButtonBase from "../components/AnimatedButtonBase";
-import HomeScreenHeader from "../components/HomeScreenHeader";
+import { BottomNavBarItem, Header } from "../components";
 
 const { Screen, Navigator } = createBottomTabNavigator<TabStackParamList>();
 
 const TabNavigator = () => {
   const theme = useTheme();
+
+  const getTabIcon = ({
+    color,
+    focused,
+    activeIcon,
+    icon,
+  }: {
+    color: string;
+    focused: boolean;
+    size: number;
+    activeIcon: ImageProps;
+    icon: ImageProps;
+  }) => (
+    <Image source={focused ? activeIcon : icon} style={styles.icon(color)} />
+  );
   return (
     <Navigator
       initialRouteName="Home"
@@ -31,65 +41,58 @@ const TabNavigator = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
           elevation: 0,
-          borderTopWidth: 0,
           backgroundColor: theme.dark ? "#000" : "#fff",
+          borderColor: theme.colors.border,
+          borderTopWidth: 1,
         },
         tabBarButton: BottomNavBarItem,
+        header: (props) => <Header {...props} />,
       }}
     >
       <Screen
         name="Home"
         component={HomeScreen}
         options={{
-          header: () => <HomeScreenHeader />,
-          tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={
-                focused
-                  ? require("../../assets/icons/Home.png")
-                  : require("../../assets/icons/HomeOutline.png")
-              }
-              style={styles.icon(color)}
-            />
-          ),
+          title: "Home",
+          tabBarIcon: (prop) =>
+            getTabIcon({
+              ...prop,
+              activeIcon: require("../../assets/icons/Home.png"),
+              icon: require("../../assets/icons/HomeOutline.png"),
+            }),
         }}
       />
       <Screen
         name="Search"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={
-                focused
-                  ? require("../../assets/icons/Search.png")
-                  : require("../../assets/icons/SearchOutline.png")
-              }
-              style={styles.icon(color)}
-            />
-          ),
+          title: "Search",
+          tabBarIcon: (prop) =>
+            getTabIcon({
+              ...prop,
+              activeIcon: require("../../assets/icons/Search.png"),
+              icon: require("../../assets/icons/SearchOutline.png"),
+            }),
         }}
       />
       <Screen
         name="Notification"
         component={NotificationScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={
-                focused
-                  ? require("../../assets/icons/Bell.png")
-                  : require("../../assets/icons/BellOutline.png")
-              }
-              style={styles.icon(color)}
-            />
-          ),
+          title: "Notifications",
+          tabBarIcon: (prop) =>
+            getTabIcon({
+              ...prop,
+              activeIcon: require("../../assets/icons/Bell.png"),
+              icon: require("../../assets/icons/BellOutline.png"),
+            }),
         }}
       />
       <Screen
         name="Profile"
         component={ProfileScreen}
         options={{
+          title: "Me",
           tabBarIcon: ({ focused, color }) => (
             <View style={styles.avatarContainer(color, focused)}>
               <Image
@@ -107,26 +110,6 @@ const TabNavigator = () => {
 };
 
 export default TabNavigator;
-
-const BottomNavBarItem = ({
-  children,
-  onPress,
-  onPressIn,
-  onPressOut,
-}: BottomTabBarButtonProps) => {
-  return (
-    <AnimatedButtonBase
-      onPress={onPress}
-      onPressIn={onPressIn}
-      onPressOut={onPressOut}
-      activeScale={0.8}
-      buttonStyle={{ flex: 1 }}
-      containerStyle={{ flex: 1 }}
-    >
-      {children}
-    </AnimatedButtonBase>
-  );
-};
 
 const styles = {
   icon: (color: string): StyleProp<ImageStyle> => ({

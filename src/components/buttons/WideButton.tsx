@@ -26,6 +26,9 @@ const WideButton = ({
       disabled={disabled}
       activeScale={activeScale}
       onPress={onPress}
+      containerStyle={{
+        flex: 1,
+      }}
       buttonStyle={[
         {
           flex: 1,

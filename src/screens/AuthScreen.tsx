@@ -1,5 +1,9 @@
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import React, { useState } from "react";
 import {
   Image,
@@ -13,9 +17,13 @@ import {
 } from "react-native";
 import WideButton from "../components/buttons/WideButton";
 import CloseButton from "../components/CloseButton";
+import { auth } from "../firebase";
+import { validateEmail } from "../utils/email-validate";
 
-const AuthHomeScreen = () => {
-  const [createAccunt, setCreateAccunt] = useState(true);
+const AuthScreen = () => {
+  const navigation = useNavigation();
+  const [createAccunt, setCreateAccunt] = useState(false);
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
   return (
@@ -30,22 +38,30 @@ const AuthHomeScreen = () => {
           source={require("../../assets/icon.png")}
           style={styles.brandIcon}
         />
-        {createAccunt ? <CreateAccountOptions /> : <LogInOptions />}
+        {createAccunt ? (
+          <CreateAccountOptions loading={loading} setLoading={setLoading} />
+        ) : (
+          <LogInOptions loading={loading} setLoading={setLoading} />
+        )}
 
         <Text
-          style={{
-            opacity: 0.2,
-            color: theme.colors.text,
-            alignSelf: "center",
-            paddingVertical: 24,
-          }}
+          style={[
+            styles.orText,
+            {
+              color: theme.colors.text,
+            },
+          ]}
         >
           OR
         </Text>
         <WideButton
           onPress={() => {}}
           text="Continue with Google"
-          style={{ backgroundColor: theme.colors.card }}
+          style={{
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.border,
+            borderWidth: 1,
+          }}
           activeScale={0.9}
           icon={<Image source={require("../../assets/icons/Google.png")} />}
           textStyle={{ color: theme.colors.text }}
@@ -53,7 +69,12 @@ const AuthHomeScreen = () => {
         <WideButton
           onPress={() => {}}
           text="Continue with Facebook"
-          style={{ marginTop: 20, backgroundColor: theme.colors.card }}
+          style={{
+            marginTop: 20,
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.border,
+            borderWidth: 1,
+          }}
           textStyle={{ color: theme.colors.text }}
           activeScale={0.9}
           icon={<Image source={require("../../assets/icons/Facebook.png")} />}
@@ -75,46 +96,51 @@ const AuthHomeScreen = () => {
           )}
         </TouchableOpacity>
       </ScrollView>
-      <CloseButton style={{ top: 20, right: 20, position: "absolute" }} />
+      {navigation.canGoBack() && (
+        <CloseButton style={{ top: 20, right: 20, position: "absolute" }} />
+      )}
     </KeyboardAvoidingView>
   );
 };
 
-export default AuthHomeScreen;
+export default AuthScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  textInput: {
-    paddingHorizontal: 20,
-    height: 52,
-    borderRadius: 16,
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  brandIcon: {
-    width: 80,
-    height: 80,
-    aspectRatio: 1,
-    resizeMode: "contain",
-    alignSelf: "center",
-    marginBottom: 40,
-    marginTop: 80,
-  },
-});
-
-const LogInOptions = () => {
+const LogInOptions = ({
+  loading,
+  setLoading,
+}: {
+  loading: boolean;
+  setLoading: (value: boolean) => void;
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const theme = useTheme();
+
+  const handleLogIn = async () => {
+    if (loading) return; // Already loading
+    if (email === "" || password === "") return; // Email or password empty
+    if (!validateEmail(email)) return; // Email not validate
+    if (password.length < 6) return; // Password is less than 6 characters long
+
+    // Create account
+    try {
+      setLoading(true);
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      console.log(user.email);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
   return (
     <View>
       <TextInput
         style={[
           styles.textInput,
           {
+            borderColor: theme.colors.border,
             backgroundColor: theme.colors.card,
             color: theme.colors.text,
           },
@@ -128,6 +154,7 @@ const LogInOptions = () => {
         style={[
           styles.textInput,
           {
+            borderColor: theme.colors.border,
             backgroundColor: theme.colors.card,
             color: theme.colors.text,
           },
@@ -139,7 +166,7 @@ const LogInOptions = () => {
         secureTextEntry
       />
       <WideButton
-        onPress={() => {}}
+        onPress={handleLogIn}
         text="Log in"
         style={{ marginTop: 20 }}
         activeScale={0.9}
@@ -148,17 +175,47 @@ const LogInOptions = () => {
   );
 };
 
-const CreateAccountOptions = () => {
+const CreateAccountOptions = ({
+  loading,
+  setLoading,
+}: {
+  loading: boolean;
+  setLoading: (value: boolean) => void;
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const theme = useTheme();
+
+  const handleCreateAccount = async () => {
+    if (loading) return; // Already loading
+    if (email === "" || password === "" || confirmPassword === "") return; // Email or password empty
+    if (!validateEmail(email)) return; // Email not validate
+    if (password.length < 6) return; // Password is less than 6 characters long
+    if (password !== confirmPassword) return; // Passswords didn't matched
+
+    // Create account
+    try {
+      setLoading(true);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(user.email);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
   return (
     <View>
       <TextInput
         style={[
           styles.textInput,
           {
+            borderColor: theme.colors.border,
             backgroundColor: theme.colors.card,
             color: theme.colors.text,
           },
@@ -173,6 +230,7 @@ const CreateAccountOptions = () => {
           styles.textInput,
           {
             backgroundColor: theme.colors.card,
+            borderColor: theme.colors.border,
             color: theme.colors.text,
           },
         ]}
@@ -186,6 +244,7 @@ const CreateAccountOptions = () => {
         style={[
           styles.textInput,
           {
+            borderColor: theme.colors.border,
             backgroundColor: theme.colors.card,
             color: theme.colors.text,
           },
@@ -197,7 +256,7 @@ const CreateAccountOptions = () => {
         secureTextEntry
       />
       <WideButton
-        onPress={() => {}}
+        onPress={handleCreateAccount}
         text="Continue"
         style={{ marginTop: 20 }}
         activeScale={0.9}
@@ -205,3 +264,32 @@ const CreateAccountOptions = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  textInput: {
+    paddingHorizontal: 20,
+    height: 52,
+    borderRadius: 16,
+    fontSize: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+  },
+  brandIcon: {
+    width: 80,
+    height: 80,
+    aspectRatio: 1,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: 40,
+    marginTop: 80,
+  },
+  orText: {
+    opacity: 0.2,
+    alignSelf: "center",
+    paddingVertical: 24,
+  },
+});

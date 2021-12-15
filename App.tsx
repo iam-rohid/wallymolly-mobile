@@ -7,7 +7,7 @@ import {
 } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
-import RootNavigator from "./src/navigators/RootNavigator";
+import RootNavigator from "./src/navigators";
 
 export default function App() {
   const scheme = useColorScheme();
@@ -15,9 +15,11 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
+      background: "#fff",
       card: "#fff",
       text: "#000",
       primary: "#0066FF",
+      border: "#F2F2F2",
     },
   };
   const darkTheme: Theme = {
@@ -25,9 +27,11 @@ export default function App() {
     dark: true,
     colors: {
       ...DarkTheme.colors,
-      card: "#151515",
+      background: "#000",
+      card: "#000",
       text: "#fff",
       primary: "#0066FF",
+      border: "#000",
     },
   };
   return (

@@ -13,7 +13,6 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnimatedButtonBase from "../components/AnimatedButtonBase";
 import CloseButton from "../components/CloseButton";
 import PostActionRow from "../components/PostActionRow";
 import UserInfoBar from "../components/UserInfoBar";
@@ -72,10 +71,9 @@ const PostDetailsScreen = ({
           style={{ backgroundColor: theme.colors.card }}
           edges={["bottom", "left", "right"]}
         >
-          <PostActionRow post={post} />
-          <UserInfoBar />
-
           <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
+            <PostActionRow post={post} />
+            <UserInfoBar />
             <Text
               style={{
                 fontSize: 14,

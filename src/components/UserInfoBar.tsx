@@ -16,7 +16,7 @@ const UserInfoBar = () => {
       style={{
         flexDirection: "row",
         alignItems: "center",
-        padding: 10,
+        paddingVertical: 10,
       }}
     >
       <Image

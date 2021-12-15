@@ -17,12 +17,11 @@ const PostCard = ({ post }: { post: WallPaperType }) => {
     <View
       style={{
         width: "100%",
-        marginBottom: 5,
         backgroundColor: theme.colors.card,
       }}
     >
-      <UserInfoBar />
       <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
+        <UserInfoBar />
         <Text
           numberOfLines={1}
           style={{
@@ -49,7 +48,9 @@ const PostCard = ({ post }: { post: WallPaperType }) => {
           }}
         />
       </TouchableWithoutFeedback>
-      <PostActionRow post={post} />
+      <View style={{ paddingHorizontal: 10 }}>
+        <PostActionRow post={post} />
+      </View>
     </View>
   );
 };

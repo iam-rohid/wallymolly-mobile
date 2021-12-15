@@ -1,8 +1,8 @@
 import { NavigatorScreenParams } from "@react-navigation/native";
 
 export type RootStackParamList = {
-  AuthNavigator: undefined;
-  HomeNavigator: undefined;
+  AuthNavigator: NavigatorScreenParams<AuthStackParamList>;
+  HomeNavigator: NavigatorScreenParams<HomeStackParamList>;
 };
 
 export type TabStackParamList = {
@@ -14,18 +14,18 @@ export type TabStackParamList = {
 
 export type AuthStackParamList = {
   Home: undefined;
-  LogIn: {
-    email: string;
-  };
-  Register: undefined;
 };
 
 export type HomeStackParamList = {
-  TabNavigator: undefined;
+  TabNavigator: NavigatorScreenParams<TabStackParamList>;
   PostDetails: {
     postId: number;
   };
   WallpaperDownlaod: {
     postId: number;
+  };
+  EditUser: undefined;
+  UserDetails: {
+    userId?: string;
   };
 };

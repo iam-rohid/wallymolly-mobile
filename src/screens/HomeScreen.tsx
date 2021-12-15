@@ -1,13 +1,19 @@
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { posts } from "../data/wallpapers";
 import PostCard from "../components/PostCard";
+import { Devider } from "../components";
 
 const HomeScreen = () => {
   return (
     <FlatList
       data={posts}
-      renderItem={({ item, index }) => <PostCard key={index} post={item} />}
+      renderItem={({ item, index }) => (
+        <View>
+          <PostCard key={index} post={item} />
+          <Devider />
+        </View>
+      )}
     />
   );
 };
